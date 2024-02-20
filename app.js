@@ -123,6 +123,8 @@ resetBtn.addEventListener("click", () => {
   tipPercent = 0;
   billvalue = 0;
   noOfPerson = 0;
+  validBillInput = false;
+  validPeopleInput = false;
   TipAmount.textContent = "$0.00";
   TotalAmount.textContent = "$0.00";
 });
