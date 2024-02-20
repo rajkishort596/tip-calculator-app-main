@@ -12,17 +12,12 @@ const customInput = document.querySelector(".custom");
 let tipPercent = 0;
 let billvalue = 0;
 let noOfPerson = 0;
+let validBillInput = false;
+let validPeopleInput = false;
 
-const selectBtn = (btn) => {
-  TipBtns.forEach((btns) => {
-    btns.classList.remove("selected");
-    btn.classList.add("selected");
-    tipPercent = btn.value;
-  });
-};
 const validateForm = (event) => {
   event.preventDefault();
-  if (validateBillInput() && validateNoPeople()) {
+  if (validBillInput && validPeopleInput) {
     calculate();
     resetBtn.classList.add("active");
     return true;
@@ -30,6 +25,14 @@ const validateForm = (event) => {
     resetBtn.classList.remove("active");
     return false;
   }
+};
+/*------------Selecting tip percentage button-------------------*/
+const selectBtn = (btn) => {
+  TipBtns.forEach((btns) => {
+    btns.classList.remove("selected");
+    btn.classList.add("selected");
+    tipPercent = btn.value;
+  });
 };
 
 TipBtns.forEach((item) => {
@@ -39,58 +42,68 @@ TipBtns.forEach((item) => {
     validateForm(event);
   });
 });
+/*-----------Custom input field validation---------------*/
+const validateCustomInput = (event) => {
+  const custInputValue = event.target.value;
+  const filteredValue = custInputValue.replace(/[^0-9]/g, "");
+  event.target.value = filteredValue;
+  tipPercent = parseInt(filteredValue);
+  customInput.style.border = `2px solid ${cyanColor}`;
+  customInput.style.color = correctColor;
+  return true;
+};
 customInput.addEventListener("input", (event) => {
   TipBtns.forEach((btns) => {
     btns.classList.remove("selected");
   });
-  customInput.style.border = `2px solid ${cyanColor}`;
-  customInput.style.color = correctColor;
-  tipPercent = parseInt(customInput.value);
+  validateCustomInput(event);
   validateForm(event);
 });
-const validateBillInput = () => {
-  billvalue = billInput.value;
-  if (isNaN(billvalue)) {
-    billInput.style.border = `2px solid ${errorColor}`;
-    return false;
-  } else {
-    billInput.style.color = correctColor;
-    billInput.style.border = `2px solid ${cyanColor}`;
-    billInput.textContent = billInput.value;
-    billvalue = parseFloat(billInput.value);
-    return true;
-  }
+/*-----------bill input field validation---------------*/
+const validateBillInput = (event) => {
+  const billInputValue = event.target.value;
+  const filteredValue = billInputValue.replace(/[^0-9]/g, "");
+  event.target.value = filteredValue;
+  billvalue = parseFloat(filteredValue);
+  billInput.style.color = correctColor;
+  billInput.style.border = `2px solid ${cyanColor}`;
 };
 billInput.addEventListener("input", (event) => {
-  validateBillInput();
+  validateBillInput(event);
+  validBillInput = true;
   validateForm(event);
 });
-
-const validateNoPeople = () => {
-  noOfPerson = persons.value;
-  if (noOfPerson == 0) {
+/*-----------Number of people input field validation---------------*/
+const validateNoPeople = (event) => {
+  const peopleInputValue = event.target.value;
+  const filteredValue = peopleInputValue.replace(/[^0-9]/g, "");
+  event.target.value = filteredValue;
+  noOfPerson = parseFloat(filteredValue);
+  if (event.target.value == "") {
+    TipAmount.textContent = "$0.00";
+    TotalAmount.textContent = "$0.00";
+    validPeopleInput = false;
+  } else if (noOfPerson === 0) {
     persons.style.border = `2px solid ${errorColor}`;
     ErrorMsg.style.display = "block";
-    return false;
-  } else if (isNaN(noOfPerson)) {
+    TipAmount.textContent = "$0.00";
+    TotalAmount.textContent = "$0.00";
+    validPeopleInput = false;
+  } else if (isNaN(peopleInputValue)) {
     persons.style.border = `2px solid ${errorColor}`;
     ErrorMsg.style.display = "none";
-    return false;
   } else {
     persons.style.color = correctColor;
     persons.style.border = `2px solid ${cyanColor}`;
-    persons.textContent = persons.value;
-    noOfPerson = parseFloat(persons.value);
     ErrorMsg.style.display = "none";
-    return true;
+    validPeopleInput = true;
   }
 };
-
 persons.addEventListener("input", (event) => {
-  validateNoPeople();
+  validateNoPeople(event);
   validateForm(event);
 });
-
+/*-----------calculate tip function-----------*/
 const calculate = () => {
   let tipPerPerson;
   let totalPerPerson;
@@ -101,7 +114,7 @@ const calculate = () => {
   TipAmount.textContent = "$" + tipPerPerson;
   TotalAmount.textContent = "$" + totalPerPerson;
 };
-
+/*-----------Reset button event--------------*/
 resetBtn.addEventListener("click", () => {
   TipBtns.forEach((btns) => {
     btns.classList.remove("selected");
