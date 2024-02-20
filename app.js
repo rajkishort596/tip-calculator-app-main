@@ -62,7 +62,7 @@ customInput.addEventListener("input", (event) => {
 /*-----------bill input field validation---------------*/
 const validateBillInput = (event) => {
   const billInputValue = event.target.value;
-  const filteredValue = billInputValue.replace(/^-?\d+(\.\d{0,2})?$/g, "");
+  const filteredValue = billInputValue.replace(/-?\d+(\.\d{0,2})?/g, "");
   event.target.value = filteredValue;
   billvalue = parseFloat(filteredValue);
   billInput.style.color = correctColor;
